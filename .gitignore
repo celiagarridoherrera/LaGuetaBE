@@ -32,3 +32,17 @@ build/
 ### VS Code ###
 .vscode/
 .qodo
+
+# Archivos del sistema
+.DS_Store
+
+# Variables de entorno y configuración sensible
+.env
+
+# Archivos generados
+*.log
+*.class
+*.jar
+*.war
+*.db
+
