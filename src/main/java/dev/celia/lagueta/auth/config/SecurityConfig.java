@@ -21,6 +21,7 @@ public class SecurityConfig {
         return http
             .authorizeHttpRequests(auth -> auth
             .requestMatchers("/h2-console/**").permitAll()
+            .requestMatchers("/api/auth/login").permitAll()
             .anyRequest().authenticated()
             )
             .formLogin(form -> form.permitAll())
