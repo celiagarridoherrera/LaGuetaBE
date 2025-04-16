@@ -2,11 +2,11 @@ package dev.celia.lagueta.image;
 
 public class ImageInfo {
     private String name;
-    private String path;
+    private String url;
 
-    public ImageInfo(String name, String path) {
+    public ImageInfo(String name, String url) {
         this.name = name;
-        this.path = path;
+        this.url = url;
     }
 
     public String getName() {
@@ -17,12 +17,12 @@ public class ImageInfo {
         this.name = name;
     }
 
-    public String getPath() {
-        return path;
+    public String getUrl() {
+        return url;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setUrl(String url) {
+        this.url = url;
     }
 
 }
