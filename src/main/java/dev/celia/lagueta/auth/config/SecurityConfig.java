@@ -18,25 +18,22 @@ public class SecurityConfig {
     }
 
     @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-            http
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/h2-console/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/reviews").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
-                    .requestMatchers("/api/**").hasRole("ADMIN")
-                    .anyRequest().authenticated()
+                .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/reviews").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/images/**").permitAll()
+                .requestMatchers("/api/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
             )
-            .csrf(csrf -> csrf.disable())
+            .formLogin(form -> form.permitAll())
             .headers(headers -> headers.frameOptions(frame -> frame.disable()))
-            .httpBasic(customizer -> {})
-            .formLogin(form -> form.disable());
-
-            return http.build();
-        }
-
+            .csrf(csrf -> csrf.disable())
+            .build();
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig)
