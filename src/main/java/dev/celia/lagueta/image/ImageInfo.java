@@ -1,10 +1,10 @@
 package dev.celia.lagueta.image;
 
-public class Image {
+public class ImageInfo {
     private String name;
     private String path;
 
-    public Image(String name, String path) {
+    public ImageInfo(String name, String path) {
         this.name = name;
         this.path = path;
     }
