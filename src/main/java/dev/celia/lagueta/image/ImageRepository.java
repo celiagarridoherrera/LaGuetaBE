@@ -1,0 +1,6 @@
+package dev.celia.lagueta.image;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface ImageRepository extends JpaRepository<ImageInfo, Long> {
+}
