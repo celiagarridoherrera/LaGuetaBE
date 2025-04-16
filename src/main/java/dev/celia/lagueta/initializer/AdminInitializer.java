@@ -11,13 +11,22 @@ import dev.celia.lagueta.user.UserRepository;
 @Configuration
 public class AdminInitializer {
 
+    private final UserRepository userRepository;
+
+    AdminInitializer(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     @Bean
     CommandLineRunner initAdmin(UserRepository userRepository, BCryptPasswordEncoder encoder) {
         return args -> {
-            if (userRepository.findByUsername("admin").isEmpty()) {
-                User admin = new User(null, "admin", encoder.encode("admin123"), "ADMIN");
+            String adminUsername = System.getProperty("ADMIN_USERNAME", "admin");
+            String adminPassword = System.getProperty("ADMIN_PASSWORD", "admin123");
+
+            if (userRepository.findByUsername(adminUsername).isEmpty()) {
+                User admin = new User(null, adminUsername, encoder.encode(adminPassword), "ROLE_ADMIN");
                 userRepository.save(admin);
-                System.out.println("¡Administrador creado!");
+                System.out.println("Administrador creado: " + adminUsername);
             }
         };
     }

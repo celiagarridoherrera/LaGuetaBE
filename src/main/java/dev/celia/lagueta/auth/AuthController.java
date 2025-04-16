@@ -1,10 +1,12 @@
 package dev.celia.lagueta.auth;
 
+import dev.celia.lagueta.auth.LoginResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -13,22 +15,25 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     @Autowired
-    private AuthenticationManager authManager;
+    private AuthenticationManager authenticationManager;
 
     @Autowired
     private JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequestDTO request) {
-        try {
-            Authentication authentication = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-            );
-            System.out.println("Usuario autenticado: " + authentication.getName());
+    public LoginResponseDTO login(@RequestBody LoginRequestDTO request) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            String token = jwtUtil.generateToken(authentication);
+
+            String role = authentication.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .findFirst()
+                    .orElse("ROLE_UNKNOWN");
             
-            return jwtUtil.generateToken(request.getUsername());
-        } catch (AuthenticationException e) {
-            throw new RuntimeException("Credenciales inválidas");
-        }
-    }    
+            return new LoginResponseDTO(token, request.getUsername(), role);
+    }
 }
