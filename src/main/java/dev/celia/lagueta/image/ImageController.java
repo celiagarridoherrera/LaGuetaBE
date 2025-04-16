@@ -1,15 +1,13 @@
 package dev.celia.lagueta.image;
 
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
+import dev.celia.lagueta.product.Product;
+import dev.celia.lagueta.product.ProductRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.List;
 
 @RestController
@@ -17,36 +15,40 @@ import java.util.List;
 public class ImageController {
 
     private final ImageService imageService;
+    private final ProductRepository productRepository;
 
-    public ImageController(ImageService imageService) {
+    public ImageController(ImageService imageService, ProductRepository productRepository) {
         this.imageService = imageService;
+        this.productRepository = productRepository;
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file, @RequestParam(name = "productId", required = false) Long productId) {
         try {
-            String fileName = imageService.saveImage(file);
-            return ResponseEntity.ok("¡Imagen subida!" + fileName);
+            Product product = null;
+            if (productId != null) {
+                product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+            }
+
+            String imageUrl = imageService.saveImage(file, product);
+            return ResponseEntity.ok("¡Imagen subida!" + imageUrl);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al subir la imagen");
         }
     }
 
     @GetMapping
-    public ResponseEntity<List<ImageInfo>> getImages() {
+    public ResponseEntity<List<ImageInfo>> getAllImages() {
         return ResponseEntity.ok(imageService.listImages());
     }
 
-    @GetMapping("/view/{filename:.+}")
-    public ResponseEntity<Resource> viewImage(@PathVariable String filename) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteImage(@PathVariable Long id) {
         try {
-            Resource image = imageService.loadImageAsResource(filename);
-            return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_JPEG)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + image.getFilename() + "\"")
-                    .body(image);
-        } catch (MalformedURLException e) {
-            return ResponseEntity.notFound().build();
+            imageService.deleteImage(id);
+            return ResponseEntity.ok("Imagen eliminada con éxito");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar la imagen");
         }
     }
 }

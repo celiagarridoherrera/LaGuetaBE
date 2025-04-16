@@ -1,6 +1,9 @@
 package dev.celia.lagueta.product;
 
-import jakarta.annotation.Generated;
+import java.util.ArrayList;
+import java.util.List;
+
+import dev.celia.lagueta.image.ImageInfo;
 import jakarta.persistence.*;
 
 @Entity
@@ -14,6 +17,9 @@ public class Product {
     private String description;
     private String category;
     private String image;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private List<ImageInfo> images = new ArrayList<>();
 
     public Product(){}
 
