@@ -1,4 +1,4 @@
-package dev.celia.lagueta.auth;
+package dev.celia.lagueta.auth.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,17 +17,21 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-            .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/h2-console/**").permitAll()
-            .anyRequest().authenticated()
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+            http
+                .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/h2-console/**", "/api/images/**", "/api/reviews", "/api/reviews/**").permitAll()
+                    .requestMatchers("/api/**").hasRole("ADMIN")
+                    .anyRequest().authenticated()
             )
-            .formLogin(form -> form.permitAll())
-            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
             .csrf(csrf -> csrf.disable())
-            .build();
-    }
+            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+            .httpBasic(customizer -> {})
+            .formLogin(form -> form.disable());
+
+            return http.build();
+        }
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig)
