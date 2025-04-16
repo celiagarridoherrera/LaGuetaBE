@@ -48,7 +48,7 @@ public class ProductController {
     ) {
         try {
             String fileName = imageService.saveImage(file, product);
-            product.setImage(file.getOriginalFilename());
+            product.setImage(fileName);
             Product saved = productService.save(product);
             return ResponseEntity.ok(saved);
         } catch (IOException e) {
