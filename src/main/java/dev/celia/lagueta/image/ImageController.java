@@ -51,4 +51,14 @@ public class ImageController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar la imagen");
         }
     }
+
+    @DeleteMapping("/{filename}")
+    public ResponseEntity<String> deleteImage(@PathVariable String filename) {
+        boolean deleted = imageService.deleteImage(filename);
+        if (deleted) {
+            return ResponseEntity.ok("Imagen eliminada con éxito");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Imagen no encontrada");
+        }
+    }
 }
