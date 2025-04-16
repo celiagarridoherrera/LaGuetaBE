@@ -54,4 +54,14 @@ public class ImageService {
         Files.deleteIfExists(filePath);
         imageRepository.delete(image);
     }
+
+    public boolean deleteImage(String filename) {
+        Path filePath = Paths.get(uploadDir, filename);
+        try {
+            return Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
