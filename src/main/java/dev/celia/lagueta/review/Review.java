@@ -1,7 +1,6 @@
 package dev.celia.lagueta.review;
 
 import java.time.LocalDateTime;
-import jakarta.annotation.Generated;
 import jakarta.persistence.*;
 
 @Entity
