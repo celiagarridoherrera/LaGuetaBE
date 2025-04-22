@@ -11,12 +11,6 @@ import dev.celia.lagueta.user.UserRepository;
 @Configuration
 public class AdminInitializer {
 
-    private final UserRepository userRepository;
-
-    AdminInitializer(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
     @Bean
     CommandLineRunner initAdmin(UserRepository userRepository, BCryptPasswordEncoder encoder) {
         return args -> {

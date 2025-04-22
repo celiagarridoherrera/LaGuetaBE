@@ -1,6 +1,5 @@
 package dev.celia.lagueta.auth;
 
-import dev.celia.lagueta.auth.LoginResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
