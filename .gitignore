@@ -39,7 +39,7 @@ build/
 # Variables de entorno y configuración sensible
 .env
 
-.upload/
+uploads/
 
 # Archivos generados
 *.log
