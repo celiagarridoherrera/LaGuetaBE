@@ -5,11 +5,13 @@ import dev.celia.lagueta.product.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -47,28 +49,30 @@ public class ImageControllerTest {
         doNothing().when(imageService).deleteImage(1L);
 
         ResponseEntity<String> response = imageController.deleteImage(1L);
+
         assertEquals(200, response.getStatusCode().value());
-        assertTrue(response.getBody().contains("éxito"));
+        assertTrue(response.getBody().contains("Imagen eliminada con éxito"));
+    }
+
+    @Test
+    void testDeleteImageByIdError() throws IOException {
+        doThrow(new IOException()).when(imageService).deleteImage(1L);
+
+        ResponseEntity<String> response = imageController.deleteImage(1L);
+
+        assertEquals(500, response.getStatusCode().value());
+        assertTrue(response.getBody().contains("Error al eliminar la imagen"));
     }
 
     @Test
     void testDeleteImageByFilename_Success() {
-        when(imageService.deleteImage("foto.jpg")).thenReturn(true);
 
-        ResponseEntity<String> response = imageController.deleteImage("foto.jpg");
+        when(imageService.deleteImage(1L)).thenReturn(true);
+
+        ResponseEntity<String> response = imageController.deleteImage(1L);
 
         assertEquals(200, response.getStatusCode().value());
-        assertTrue(response.getBody().contains("éxito"));
-    }
-
-    @Test
-    void testDeleteImageByFilename_NotFound() {
-        when(imageService.deleteImage("foto.jpg")).thenReturn(false);
-
-        ResponseEntity<String> response = imageController.deleteImage("foto.jpg");
-
-        assertEquals(404, response.getStatusCode().value());
-        assertTrue(response.getBody().contains("no encontrada"));
+        assertTrue(response.getBody().contains("Imagen eliminada con éxito"));
     }
 
     @Test
@@ -83,17 +87,31 @@ public class ImageControllerTest {
 
         assertEquals(200, response.getStatusCode().value());
         assertTrue(response.getBody().contains("¡Imagen subida!"));
+        verify(imageService).saveImage(file, product); 
     }
 
     @Test
     void testUploadImageWithoutProduct() throws IOException {
         MockMultipartFile file = new MockMultipartFile("file", "foto.jpg", "image/jpeg", "contenido".getBytes());
 
-        when(imageService.saveImage(any(), isNull())).thenReturn("/images/foto.jpg");
+        when(imageService.saveImage(file, null)).thenReturn("/images/foto.jpg");
 
         ResponseEntity<String> response = imageController.uploadImage(file, null);
 
         assertEquals(200, response.getStatusCode().value());
         assertTrue(response.getBody().contains("¡Imagen subida!"));
+        verify(imageService).saveImage(file, null); 
+    }
+
+    @Test
+    void testUploadImageError() throws IOException {
+        MockMultipartFile file = new MockMultipartFile("file", "foto.jpg", "image/jpeg", "contenido".getBytes());
+
+        when(imageService.saveImage(file, null)).thenThrow(new IOException("Error al subir la imagen"));
+
+        ResponseEntity<String> response = imageController.uploadImage(file, null);
+
+        assertEquals(500, response.getStatusCode().value());
+        assertTrue(response.getBody().contains("Error al subir la imagen"));
     }
 }
