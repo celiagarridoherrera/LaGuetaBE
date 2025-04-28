@@ -39,6 +39,8 @@ build/
 # Variables de entorno y configuración sensible
 .env
 
+uploads/
+
 # Archivos generados
 *.log
 *.class
