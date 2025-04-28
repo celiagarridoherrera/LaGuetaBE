@@ -1,50 +1,43 @@
-# 🍻 La Gueta – Web del Chigre-Pub Asturiano
+# Proyecto "La Gueta"
 
-Bienvenid@ al proyecto **La Gueta**, una web fullstack desarrollada con Java Spring Boot (backend) y React con Tailwind CSS (frontend), pensada para digitalizar la presencia del chigre-pub asturiano *La Gueta*.
+**La Gueta** es una web para un bar, con un sistema de gestión de productos, opiniones y galería de imágenes. La plataforma permite a los administradores gestionar productos, visualizar opiniones y añadir imágenes de manera sencilla. La web también está optimizada para SEO, destacando que es un chigre-pub donde se escancia sidra.
 
-## 🎯 Objetivo del proyecto
+## Tecnologías
 
-Crear una web moderna, visual y funcional para mostrar información clave del local y permitir al personal gestionar el contenido desde un panel de administración seguro.
-
-## 🚀 Tecnologías utilizadas
-
-### Backend:
-- Java 17
-- Spring Boot 3
-- Spring Data JPA
-- Spring Security
-- H2 Database (persistencia en disco)
-- BCrypt
-- Maven
-
-### Frontend (pendiente de implementación):
-- React
-- Tailwind CSS
-- Axios
-- React Router DOM
-- React Hook Form
+- **Frontend:** React, Tailwind CSS, Axios
+- **Backend:** Java, Spring Boot, Spring Security, H2
+- **Base de Datos:** H2 (en memoria para desarrollo)
+- **Autenticación:** JWT (JSON Web Tokens)
+- **Almacenamiento de imágenes:** Local (en el servidor, se almacenan en carpetas específicas)
   
+## Características
 
+### Funcionalidades del Frontend
 
-## 🧱 Estructura del proyecto
+- **Vista pública:**
+  - Carta del menú (productos)
+  - Galería de imágenes
+  - Sección de opiniones
+  - Información de contacto
+  
+- **Vista privada (Admin):**
+  - CRUD de productos (crear, leer, actualizar, eliminar productos)
+  - CRUD de opiniones (ver y eliminar opiniones)
+  - Subida de imágenes (productos y galería)
+  
+### Autenticación
 
-```bash
-src/main/java/com/lagueta
-│
-├── auth/         # Login y seguridad
-├── user/         # Administración
-├── product/      # Carta
-├── rating/       # Opiniones
-├── image/        # Galería
-├── exception/    # Manejo de errores
-├── initializer/  # Usuario admin por defecto
-└── LaguetaApplication.java
-```
-## 🧪 Tests
-✔️ El proyecto debe alcanzar un 70% mínimo de cobertura de tests con JUnit.
+- **Login real** con autenticación de usuario mediante JWT.
+  
+### Implementación de Imágenes
 
-## 📬 Contacto
-Celia Garrido – Proyecto personal de portfolio
-Bootcamp F5 – 2025
-Email: celiagarridoherrera@gmail.com
-LinkedIn: celiagarridoherrera
+- Las imágenes se almacenan de forma local en el servidor y se vinculan a productos y galería.
+- Cuando se suben imágenes, se generan nombres únicos para evitar colisiones.
+
+## Estructura del Proyecto
+
+- **Frontend:**  
+  La parte frontend está desarrollada con React y utiliza Tailwind CSS para el diseño responsivo. Axios se usa para la comunicación con el backend a través de los endpoints REST.
+
+- **Backend:**  
+  El backend está construido con Spring Boot, y utiliza H2 como base de datos en memoria para facilitar el desarrollo. La seguridad está implementada con Spring Security, y la autenticación de usuarios se maneja mediante JWT.
