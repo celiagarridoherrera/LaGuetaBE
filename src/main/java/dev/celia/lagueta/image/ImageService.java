@@ -29,8 +29,12 @@ public class ImageService {
     }
 
     public String saveImage(MultipartFile file, Product product) throws IOException {
-        String fileName = file.getOriginalFilename();
-        Path filePath = Paths.get(uploadDir, file.getOriginalFilename());
+        if (file.isEmpty()) {
+            throw new IOException("El archivo está vacío");
+        }
+
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        Path filePath = Paths.get(uploadDir, fileName);
 
         Files.write(filePath, file.getBytes());
 
@@ -46,12 +50,15 @@ public class ImageService {
     public List<ImageInfo> listImages() {
         return imageRepository.findAll();
     }
-    
-    public void deleteImage(Long id) throws IOException {
-        ImageInfo image = imageRepository.findById(id).orElseThrow(() -> new RuntimeException("Image not found"));
 
+    public void deleteImage(Long id) throws IOException {
+        ImageInfo image = imageRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Image not found"));
+
+        // Eliminar el archivo físico
         Path filePath = Paths.get(uploadDir, image.getName());
         Files.deleteIfExists(filePath);
+
         imageRepository.delete(image);
     }
 

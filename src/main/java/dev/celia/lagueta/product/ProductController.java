@@ -1,16 +1,13 @@
 package dev.celia.lagueta.product;
 
+import dev.celia.lagueta.image.ImageService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import dev.celia.lagueta.image.ImageService;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
 import java.io.IOException;
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/api/products")
@@ -44,11 +41,13 @@ public class ProductController {
     @PostMapping("/with-image")
     public ResponseEntity<Product> createProductWithImage(
             @RequestPart("product") Product product,
-            @RequestPart("file") MultipartFile file
+            @RequestPart(value = "file", required = false) MultipartFile file
     ) {
         try {
-            String fileName = imageService.saveImage(file, product);
-            product.setImage(fileName);
+            if (file != null && !file.isEmpty()) {
+                String fileName = imageService.saveImage(file, product);
+                product.setImage(fileName);
+            }
             Product saved = productService.save(product);
             return ResponseEntity.ok(saved);
         } catch (IOException e) {
@@ -56,19 +55,36 @@ public class ProductController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product updateproduct) {
-        return productService.findById(id)
-                .map(product -> {
-                    product.setName(updateproduct.getName());
-                    product.setDescription(updateproduct.getDescription());
-                    product.setCategory(updateproduct.getCategory());
-                    product.setImage(updateproduct.getImage());
-                    return ResponseEntity.ok(productService.save(product));
-                })
-                .orElse(ResponseEntity.notFound().build());
+    @PutMapping("/with-image/{id}")
+    public ResponseEntity<Product> updateProductWithImage(
+            @PathVariable Long id,
+            @RequestPart("product") Product updatedProduct,
+            @RequestPart(value = "file", required = false) MultipartFile file
+    ) {
+        try {
+            return productService.findById(id)
+                    .map(existingProduct -> {
+                        existingProduct.setName(updatedProduct.getName());
+                        existingProduct.setDescription(updatedProduct.getDescription());
+                        existingProduct.setCategory(updatedProduct.getCategory());
+
+                        if (file != null && !file.isEmpty()) {
+                            try {
+                                String fileName = imageService.saveImage(file, existingProduct);
+                                existingProduct.setImage(fileName);
+                            } catch (IOException e) {
+                                throw new RuntimeException("Error saving image", e);
+                            }
+                        }
+                        Product saved = productService.save(existingProduct);
+                        return ResponseEntity.ok(saved);
+                    })
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
-    
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
         if (productService.findById(id).isPresent()) {
@@ -78,5 +94,4 @@ public class ProductController {
             return ResponseEntity.notFound().build();
         }
     }
-
 }
