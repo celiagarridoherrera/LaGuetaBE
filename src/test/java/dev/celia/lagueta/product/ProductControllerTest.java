@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
@@ -76,7 +75,6 @@ public class ProductControllerTest {
 
         assertEquals(204, response.getStatusCode().value());
         verify(productService).delete(1L);
-
     }
 
     @Test
@@ -119,27 +117,34 @@ public class ProductControllerTest {
         assertNull(response.getBody());
     }
 
-
     @Test
-    void testUpdateProductFound() {
-        Product updatedProduct = new Product(null, "Sidra", "Sidra Llagar de Fozana", "Sidra", "Sidra.jpg");
+    void testUpdateProductWithImageFound() {
+        Product updatedProduct = new Product(null, "Sidra", "Sidra Llagar de Fozana", "Sidra", "SidraUpdated.jpg");
         
         when(productService.findById(1L)).thenReturn(Optional.of(sampleProduct));
-        when(productService.save(sampleProduct)).thenReturn(updatedProduct);
+        
+        // Actualiza las propiedades del producto existente
+        sampleProduct.setName(updatedProduct.getName());
+        sampleProduct.setDescription(updatedProduct.getDescription());
+        sampleProduct.setCategory(updatedProduct.getCategory());
+        sampleProduct.setImage(updatedProduct.getImage());
 
-        ResponseEntity<Product> response = productController.updateProduct(1L, updatedProduct);
+        when(productService.save(sampleProduct)).thenReturn(sampleProduct);
+
+        ResponseEntity<Product> response = productController.updateProductWithImage(1L, updatedProduct, null);
 
         assertEquals(200, response.getStatusCode().value());
         assertEquals("Sidra", response.getBody().getName());
+        assertEquals("SidraUpdated.jpg", response.getBody().getImage());
     }
 
     @Test
-    void testUpdateProductNotFound() {
-        Product updatedProduct = new Product(null, "Sidra", "Sidra Llagar de Fozana", "Sidra", "Sidra.jpg");
+    void testUpdateProductWithImageNotFound() {
+        Product updatedProduct = new Product(null, "Sidra", "Sidra Llagar de Fozana", "Sidra", "SidraUpdated.jpg");
         
         when(productService.findById(99L)).thenReturn(Optional.empty());
 
-        ResponseEntity<Product> response = productController.updateProduct(99L, updatedProduct);
+        ResponseEntity<Product> response = productController.updateProductWithImage(99L, updatedProduct, null);
 
         assertEquals(404, response.getStatusCode().value());
     }
