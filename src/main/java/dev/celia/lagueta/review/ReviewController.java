@@ -3,6 +3,7 @@ package dev.celia.lagueta.review;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,6 +33,7 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.save(review));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
         if (reviewService.findById(id).isPresent()) {

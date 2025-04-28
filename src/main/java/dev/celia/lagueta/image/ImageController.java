@@ -23,15 +23,17 @@ public class ImageController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file, @RequestParam(name = "productId", required = false) Long productId) {
+    public ResponseEntity<String> uploadImage(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(name = "productId", required = false) Long productId) {
         try {
             Product product = null;
             if (productId != null) {
-                product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                product = productRepository.findById(productId)
+                        .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
             }
-
             String imageUrl = imageService.saveImage(file, product);
-            return ResponseEntity.ok("¡Imagen subida!" + imageUrl);
+            return ResponseEntity.ok("¡Imagen subida! " + imageUrl);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al subir la imagen");
         }
@@ -42,7 +44,7 @@ public class ImageController {
         return ResponseEntity.ok(imageService.listImages());
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/id/{id}")
     public ResponseEntity<String> deleteImage(@PathVariable Long id) {
         try {
             imageService.deleteImage(id);
@@ -50,15 +52,5 @@ public class ImageController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar la imagen");
         }
-    }
-
-    @DeleteMapping("/{filename}")
-    public ResponseEntity<String> deleteImage(@PathVariable String filename) {
-        boolean deleted = imageService.deleteImage(filename);
-        if (deleted) {
-            return ResponseEntity.ok("Imagen eliminada con éxito");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Imagen no encontrada");
-        }
-    }
+    }    
 }
